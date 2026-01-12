@@ -1320,25 +1320,212 @@
     // Экспорт в PDF (через print)
     function exportToPDF(results, insights, projectName) {
         const printWindow = window.open('', '_blank');
+        
+        // Формируем полный контент
+        const contradictionsHtml = insights.contradictions && insights.contradictions.length > 0 
+            ? `<div class="section">
+                <div class="section-title">⚠️ Проверка противоречий</div>
+                ${insights.contradictions.map(c => `<p style="background:#fff3cd;padding:12px;border-radius:4px;margin:8px 0;"><strong>${c.type === 'warning' ? '⚠️ Внимание' : 'ℹ️ Информация'}:</strong> ${c.message}</p>`).join('')}
+            </div>` : '';
+        
+        const benchmarkHtml = insights.benchmark 
+            ? `<div class="section">
+                <div class="section-title">📊 Сравнение с эталонными JTBD</div>
+                <p><strong>Эталонная JTBD:</strong> "${insights.benchmark.jtbd}"</p>
+                <p><strong>Примеры:</strong> ${insights.benchmark.examples.join(', ')}</p>
+            </div>` : '';
+        
+        const metricsHtml = insights.metrics 
+            ? `<div class="section">
+                <div class="section-title">💰 Прогноз бизнес-метрик</div>
+                <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>Retention Rate</strong></td><td style="padding:8px;border:1px solid #ddd;">${insights.metrics.retention}%</td></tr>
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>Conversion Rate</strong></td><td style="padding:8px;border:1px solid #ddd;">${insights.metrics.conversion}%</td></tr>
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>LTV</strong></td><td style="padding:8px;border:1px solid #ddd;">$${insights.metrics.ltv}</td></tr>
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>CAC</strong></td><td style="padding:8px;border:1px solid #ddd;">$${insights.metrics.cac}</td></tr>
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>ROI</strong></td><td style="padding:8px;border:1px solid #ddd;">${insights.metrics.roi}%</td></tr>
+                    <tr><td style="padding:8px;border:1px solid #ddd;"><strong>Churn Rate</strong></td><td style="padding:8px;border:1px solid #ddd;">${insights.metrics.churn}%</td></tr>
+                </table>
+            </div>` : '';
+        
+        const prioritizedHtml = insights.prioritized && insights.prioritized.length > 0
+            ? `<div class="section">
+                <div class="section-title">🎯 Приоритизированные рекомендации</div>
+                ${insights.prioritized.map((rec, idx) => `
+                    <div style="margin:16px 0;padding:12px;background:#f9f9f9;border-left:4px solid ${rec.priority === 'high' ? '#dc3545' : rec.priority === 'medium' ? '#ffc107' : '#28a745'};">
+                        <strong>${idx + 1}. ${rec.title}</strong> <span style="font-size:12px;color:#666;">[${rec.priority === 'high' ? 'Высокий' : rec.priority === 'medium' ? 'Средний' : 'Низкий'} приоритет]</span>
+                        <p style="margin:8px 0;">${typeof rec.content === 'string' ? rec.content : rec.content.map(f => `• ${f}`).join('<br>')}</p>
+                        <p style="font-size:12px;color:#666;"><strong>Влияние:</strong> ${rec.impact} | <strong>Усилия:</strong> ${rec.effort === 'high' ? 'Высокие' : rec.effort === 'medium' ? 'Средние' : 'Низкие'}</p>
+                    </div>
+                `).join('')}
+            </div>` : '';
+        
         const html = `
             <!DOCTYPE html>
             <html>
             <head>
-                <title>JTBD Analysis - ${projectName}</title>
+                <title>JTBD Analysis - ${projectName || 'Продукт'}</title>
                 <style>
-                    body { font-family: Arial, sans-serif; padding: 40px; }
-                    h1 { color: #000; }
-                    .section { margin-bottom: 30px; }
-                    .section-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+                    @media print {
+                        body { margin: 0; padding: 20px; }
+                        .no-print { display: none; }
+                    }
+                    body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                    h1 { color: #000; margin-bottom: 8px; }
+                    .subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
+                    .section { margin-bottom: 30px; page-break-inside: avoid; }
+                    .section-title { font-weight: bold; font-size: 16px; margin-bottom: 12px; color: #000; }
+                    .section-content { line-height: 1.6; }
+                    ul { margin: 8px 0; padding-left: 20px; }
+                    li { margin: 4px 0; }
+                    table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+                    td { padding: 8px; border: 1px solid #ddd; }
                 </style>
             </head>
             <body>
-                <h1>JTBD Analysis: ${projectName}</h1>
+                <h1>📊 Анализ JTBD: ${projectName || 'Продукт'}</h1>
+                <div class="subtitle">Дата: ${new Date().toLocaleDateString('ru-RU')}</div>
+                
                 <div class="section">
-                    <div class="section-title">Основная Job To Be Done</div>
-                    <p>${results.primaryJTBD}</p>
+                    <div class="section-title">📋 Основная Job To Be Done</div>
+                    <div class="section-content">
+                        <p style="font-size:18px;font-style:italic;font-weight:600;">"${results.primaryJTBD}"</p>
+                    </div>
                 </div>
-                <!-- Добавьте остальные разделы -->
+
+                ${contradictionsHtml}
+
+                ${benchmarkHtml}
+
+                <div class="section">
+                    <div class="section-title">🎯 Стратегия позиционирования</div>
+                    <div class="section-content">${insights.positioning}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚙️ Приоритетные функции</div>
+                    <div class="section-content">
+                        <ul>
+                            ${insights.priorityFeatures.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">❤️ Эмоциональная стратегия</div>
+                    <div class="section-content">${insights.emotionalStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">📊 Функциональные задачи</div>
+                    <div class="section-content">
+                        <ul>
+                            ${results.functionalJobs.map(j => `<li>${j}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">💭 Эмоциональные задачи</div>
+                    <div class="section-content">
+                        <ul>
+                            ${results.emotionalJobs.map(j => `<li>${j}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                ${results.socialJobs ? `
+                <div class="section">
+                    <div class="section-title">👥 Социальные задачи</div>
+                    <div class="section-content">
+                        <ul>
+                            ${results.socialJobs.map(j => `<li>${j}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="section">
+                    <div class="section-title">⚠️ Риски и retention</div>
+                    <div class="section-content">
+                        <p><strong>Пользователь уйдет, если:</strong></p>
+                        <ul>
+                            ${results.switchingTriggers.map(t => `<li>${t}</li>`).join('')}
+                        </ul>
+                        <p style="margin-top:12px;"><strong>Как удержать:</strong> ${insights.retentionFocus}</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🎯 Целевой сегмент</div>
+                    <div class="section-content">${insights.targetSegment}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">📈 Ключевые метрики успеха</div>
+                    <div class="section-content">${insights.successMetrics}</div>
+                </div>
+
+                ${metricsHtml}
+
+                <div class="section">
+                    <div class="section-title">🔄 Lifecycle фокус</div>
+                    <div class="section-content">${insights.lifecycleInsights}</div>
+                </div>
+
+                ${insights.complianceNotes ? `
+                <div class="section">
+                    <div class="section-title">🔒 Соответствие требованиям</div>
+                    <div class="section-content">${insights.complianceNotes}</div>
+                </div>
+                ` : ''}
+
+                <div class="section">
+                    <div class="section-title">🔍 Анализ текущего решения</div>
+                    <div class="section-content">${insights.currentSolutionInsights}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🚀 Триггер поиска решения</div>
+                    <div class="section-content">${insights.searchTriggerStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">✅ Критерии успеха решения</div>
+                    <div class="section-content">${insights.successCriteriaStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🚧 Стратегия преодоления барьеров</div>
+                    <div class="section-content">${insights.adoptionStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">📅 Стратегия использования</div>
+                    <div class="section-content">${insights.usageStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🔗 Стратегия интеграций</div>
+                    <div class="section-content">${insights.integrationStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">💼 Стратегия продаж</div>
+                    <div class="section-content">${insights.salesStrategy}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🎓 Стратегия онбординга</div>
+                    <div class="section-content">${insights.onboardingStrategy}</div>
+                </div>
+
+                ${prioritizedHtml}
+
+                <div style="margin-top:40px;padding-top:20px;border-top:1px solid #ddd;font-size:12px;color:#666;text-align:center;">
+                    Создано с помощью JTBD Finder by Anastasia Amanova<br>
+                    https://anastasiahuman.github.io/jtbd/
+                </div>
             </body>
             </html>
         `;
@@ -1349,20 +1536,130 @@
 
     // Экспорт в Excel (CSV формат)
     function exportToExcel(results, insights, projectName) {
-        const csv = [
-            ['JTBD Analysis', projectName],
-            ['Дата', new Date().toLocaleDateString()],
-            [''],
-            ['Основная JTBD', results.primaryJTBD],
-            [''],
-            ['Приоритетные функции'],
-            ...insights.priorityFeatures.map(f => ['', f])
-        ].map(row => row.join(',')).join('\n');
+        const escapeCSV = (str) => {
+            if (!str) return '';
+            const s = String(str);
+            if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+                return '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+        };
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const csv = [
+            ['JTBD Analysis', escapeCSV(projectName || 'Продукт')],
+            ['Дата', new Date().toLocaleDateString('ru-RU')],
+            [''],
+            ['ОСНОВНАЯ JOB TO BE DONE'],
+            ['', escapeCSV(results.primaryJTBD)],
+            [''],
+            ...(insights.contradictions && insights.contradictions.length > 0 ? [
+                ['ПРОВЕРКА ПРОТИВОРЕЧИЙ'],
+                ...insights.contradictions.map(c => ['', escapeCSV(`${c.type === 'warning' ? '⚠️ Внимание' : 'ℹ️ Информация'}: ${c.message}`)]),
+                ['']
+            ] : []),
+            ...(insights.benchmark ? [
+                ['СРАВНЕНИЕ С ЭТАЛОННЫМИ JTBD'],
+                ['Эталонная JTBD', escapeCSV(insights.benchmark.jtbd)],
+                ['Примеры продуктов', escapeCSV(insights.benchmark.examples.join(', '))],
+                ['']
+            ] : []),
+            ['СТРАТЕГИЯ ПОЗИЦИОНИРОВАНИЯ'],
+            ['', escapeCSV(insights.positioning)],
+            [''],
+            ['ПРИОРИТЕТНЫЕ ФУНКЦИИ'],
+            ...insights.priorityFeatures.map((f, i) => [i + 1, escapeCSV(f)]),
+            [''],
+            ['ЭМОЦИОНАЛЬНАЯ СТРАТЕГИЯ'],
+            ['', escapeCSV(insights.emotionalStrategy)],
+            [''],
+            ['ФУНКЦИОНАЛЬНЫЕ ЗАДАЧИ'],
+            ...results.functionalJobs.map(j => ['', escapeCSV(j)]),
+            [''],
+            ['ЭМОЦИОНАЛЬНЫЕ ЗАДАЧИ'],
+            ...results.emotionalJobs.map(j => ['', escapeCSV(j)]),
+            [''],
+            ...(results.socialJobs ? [
+                ['СОЦИАЛЬНЫЕ ЗАДАЧИ'],
+                ...results.socialJobs.map(j => ['', escapeCSV(j)]),
+                ['']
+            ] : []),
+            ['РИСКИ ПЕРЕКЛЮЧЕНИЯ'],
+            ...results.switchingTriggers.map(t => ['', escapeCSV(t)]),
+            [''],
+            ['СТРАТЕГИЯ RETENTION'],
+            ['', escapeCSV(insights.retentionFocus)],
+            [''],
+            ['ЦЕЛЕВОЙ СЕГМЕНТ'],
+            ['', escapeCSV(insights.targetSegment)],
+            [''],
+            ['КЛЮЧЕВЫЕ МЕТРИКИ УСПЕХА'],
+            ['', escapeCSV(insights.successMetrics)],
+            [''],
+            ...(insights.metrics ? [
+                ['ПРОГНОЗ БИЗНЕС-МЕТРИК'],
+                ['Retention Rate', `${insights.metrics.retention}%`],
+                ['Conversion Rate', `${insights.metrics.conversion}%`],
+                ['LTV (Lifetime Value)', `$${insights.metrics.ltv}`],
+                ['CAC (Acquisition Cost)', `$${insights.metrics.cac}`],
+                ['ROI', `${insights.metrics.roi}%`],
+                ['Churn Rate', `${insights.metrics.churn}%`],
+                ['']
+            ] : []),
+            ['LIFECYCLE ФОКУС'],
+            ['', escapeCSV(insights.lifecycleInsights)],
+            [''],
+            ...(insights.complianceNotes ? [
+                ['СООТВЕТСТВИЕ ТРЕБОВАНИЯМ'],
+                ['', escapeCSV(insights.complianceNotes)],
+                ['']
+            ] : []),
+            ['АНАЛИЗ ТЕКУЩЕГО РЕШЕНИЯ'],
+            ['', escapeCSV(insights.currentSolutionInsights)],
+            [''],
+            ['ТРИГГЕР ПОИСКА РЕШЕНИЯ'],
+            ['', escapeCSV(insights.searchTriggerStrategy)],
+            [''],
+            ['КРИТЕРИИ УСПЕХА РЕШЕНИЯ'],
+            ['', escapeCSV(insights.successCriteriaStrategy)],
+            [''],
+            ['СТРАТЕГИЯ ПРЕОДОЛЕНИЯ БАРЬЕРОВ'],
+            ['', escapeCSV(insights.adoptionStrategy)],
+            [''],
+            ['СТРАТЕГИЯ ИСПОЛЬЗОВАНИЯ'],
+            ['', escapeCSV(insights.usageStrategy)],
+            [''],
+            ['СТРАТЕГИЯ ИНТЕГРАЦИЙ'],
+            ['', escapeCSV(insights.integrationStrategy)],
+            [''],
+            ['СТРАТЕГИЯ ПРОДАЖ'],
+            ['', escapeCSV(insights.salesStrategy)],
+            [''],
+            ['СТРАТЕГИЯ ОНБОРДИНГА'],
+            ['', escapeCSV(insights.onboardingStrategy)],
+            [''],
+            ...(insights.prioritized && insights.prioritized.length > 0 ? [
+                ['ПРИОРИТИЗИРОВАННЫЕ РЕКОМЕНДАЦИИ'],
+                ['Приоритет', 'Название', 'Содержание', 'Влияние', 'Усилия'],
+                ...insights.prioritized.map(rec => [
+                    rec.priority === 'high' ? 'Высокий' : rec.priority === 'medium' ? 'Средний' : 'Низкий',
+                    escapeCSV(rec.title),
+                    escapeCSV(typeof rec.content === 'string' ? rec.content : rec.content.join('; ')),
+                    escapeCSV(rec.impact),
+                    rec.effort === 'high' ? 'Высокие' : rec.effort === 'medium' ? 'Средние' : 'Низкие'
+                ]),
+                ['']
+            ] : []),
+            [''],
+            ['Создано с помощью JTBD Finder by Anastasia Amanova'],
+            ['https://anastasiahuman.github.io/jtbd/']
+        ].map(row => row.map(cell => escapeCSV(cell)).join(',')).join('\n');
+
+        // Добавляем BOM для правильного отображения кириллицы в Excel
+        const BOM = '\uFEFF';
+        const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `jtbd-analysis-${projectName}-${Date.now()}.csv`;
+        link.download = `jtbd-analysis-${(projectName || 'product').replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.csv`;
         link.click();
     }
 
