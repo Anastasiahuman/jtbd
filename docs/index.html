@@ -61,6 +61,11 @@
             letter-spacing: -0.3px;
         }
 
+        .header-title:hover {
+            opacity: 0.7;
+            transition: opacity var(--duration-transition) var(--ease-standard);
+        }
+
         .progress-bar {
             height: 1px;
             background-color: var(--color-border);
@@ -1749,7 +1754,7 @@
         return `
             <div class="header">
                 <div class="header-content">
-                    <div class="header-title">JTBD Finder by Anastasia Amanova</div>
+                    <div class="header-title" id="headerTitle" style="cursor: pointer; user-select: none;">JTBD Finder by Anastasia Amanova</div>
                     <div style="font-size: 12px; color: var(--color-text-secondary);">
                         ${progress.current} / ${progress.total}
                     </div>
@@ -1818,6 +1823,26 @@
         
         return `
             <div class="question-container">
+                ${isFirst ? `
+                <div style="background-color:#f9f9f9;border-radius:8px;padding:24px;margin-bottom:32px;border:1px solid var(--color-border);">
+                    <div style="font-size:20px;font-weight:600;margin-bottom:12px;">JTBD Finder</div>
+                    <div style="font-size:15px;color:var(--color-text-primary);margin-bottom:16px;line-height:1.6;">
+                        Инструмент для анализа продуктов по методологии Jobs To Be Done.
+                    </div>
+                    <div style="font-size:14px;color:var(--color-text-secondary);margin-bottom:12px;">
+                        <strong>За 10 минут получаете:</strong>
+                    </div>
+                    <ul style="font-size:14px;color:var(--color-text-secondary);margin-left:20px;margin-bottom:16px;line-height:1.8;">
+                        <li>Основную задачу вашего продукта</li>
+                        <li>Персонализированные рекомендации</li>
+                        <li>Прогноз бизнес-метрик</li>
+                        <li>План действий с приоритетами</li>
+                    </ul>
+                    <div style="font-size:13px;color:var(--color-text-secondary);font-style:italic;">
+                        Полезно предпринимателям, продактам и маркетологам.
+                    </div>
+                </div>
+                ` : ''}
                 <div class="question-number">Вопрос ${currentIndex + 1} из ${QUESTIONS.length}</div>
                 <div class="question-text">${question.text}</div>
                 ${isTextInput ? '' : '<div class="multiple-hint">Можно выбрать несколько вариантов</div>'}
@@ -2332,6 +2357,18 @@ ${insights.onboardingStrategy}
         const nextBtn = document.getElementById('nextBtn');
         if (prevBtn) prevBtn.addEventListener('click', handlePrevClick);
         if (nextBtn) nextBtn.addEventListener('click', handleNextClick);
+
+        // Обработчик клика на заголовок для сброса
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.addEventListener('click', () => {
+                if (confirm('Начать заново? Весь прогресс будет сброшен.')) {
+                    state.reset();
+                    localStorage.clear();
+                    window.location.reload();
+                }
+            });
+        }
     }
 
     function showResults() {
@@ -2362,6 +2399,18 @@ ${insights.onboardingStrategy}
         }
         if (exportExcelBtn) {
             exportExcelBtn.addEventListener('click', () => exportToExcel(results, insights, projectName));
+        }
+
+        // Обработчик клика на заголовок для сброса
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.addEventListener('click', () => {
+                if (confirm('Начать заново? Весь прогресс будет сброшен.')) {
+                    state.reset();
+                    localStorage.clear();
+                    window.location.reload();
+                }
+            });
         }
     }
 
