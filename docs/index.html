@@ -355,10 +355,153 @@
             color: var(--color-border);
         }
 
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .priority-high {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .priority-medium {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .priority-low {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .metric-card {
+            background-color: #f8f9fa;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-accent);
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .saved-analyses {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .saved-item {
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all var(--duration-transition) var(--ease-standard);
+        }
+
+        .saved-item:hover {
+            background-color: #f9f9f9;
+            border-color: var(--color-accent);
+        }
+
+        .saved-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .saved-item-date {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .comparison-card {
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 16px;
+            background-color: #f9f9f9;
+        }
+
+        .comparison-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .similarity-score {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .similarity-high {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .similarity-medium {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .similarity-low {
+            background-color: #dc3545;
+            color: white;
+        }
+
         @media (max-width: 600px) {
             .question-text { font-size: 24px; }
             .results-title { font-size: 24px; }
             .container { padding: 24px 16px; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .comparison-view { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -382,6 +525,7 @@
         {
             id: 'context',
             text: 'Какой тип продукта вы анализируете?',
+            weight: 5,
             answers: [
                 { id: 'saas', text: 'SaaS / Программное обеспечение' },
                 { id: 'physical', text: 'Физический продукт' },
@@ -392,6 +536,7 @@
         {
             id: 'user_type',
             text: 'Кто основной пользователь?',
+            weight: 5,
             answers: [
                 { id: 'individual', text: 'Индивидуальные потребители' },
                 { id: 'business', text: 'Компании / Команды' },
@@ -401,6 +546,7 @@
         {
             id: 'trigger_situation',
             text: 'В какой ситуации нужен ваш продукт?',
+            weight: 5,
             answers: [
                 { id: 'pain', text: 'Когда решают проблему' },
                 { id: 'goal', text: 'Когда хотят достичь цели' },
@@ -411,6 +557,7 @@
         {
             id: 'emotional_driver',
             text: 'Что важнее всего для пользователей?',
+            weight: 4,
             answers: [
                 { id: 'confidence', text: 'Уверенность и спокойствие' },
                 { id: 'status', text: 'Статус и принадлежность' },
@@ -421,6 +568,7 @@
         {
             id: 'functional_focus',
             text: 'Какая задача самая важная?',
+            weight: 5,
             answers: [
                 { id: 'speed', text: 'Быстро делать' },
                 { id: 'quality', text: 'Делать качественно' },
@@ -431,6 +579,7 @@
         {
             id: 'decision_factor',
             text: 'Почему выбирают ваш продукт?',
+            weight: 4,
             answers: [
                 { id: 'price', text: 'Потому что дешевле' },
                 { id: 'experience', text: 'Потому что удобнее' },
@@ -441,6 +590,7 @@
         {
             id: 'success_metric',
             text: 'Как пользователи понимают, что продукт помогает?',
+            weight: 4,
             answers: [
                 { id: 'time_saved', text: 'Экономят время' },
                 { id: 'cost_saved', text: 'Экономят деньги' },
@@ -899,7 +1049,10 @@
         const informationSource = get('information_source');
         const maturityLevel = get('maturity_level');
 
-        return {
+        const contradictions = checkContradictions(answers);
+        const benchmark = getBenchmarkJTBD(context, userType);
+        const metrics = calculateBusinessMetrics(answers, results);
+        const prioritized = prioritizeRecommendations({
             positioning: getPositioning(decisionFactor, context),
             priorityFeatures: getPriorityFeatures(functional, context),
             emotionalStrategy: getEmotionalStrategy(emotional, context),
@@ -916,7 +1069,296 @@
             integrationStrategy: getIntegrationStrategy(integrationImportance, functional),
             salesStrategy: getSalesStrategy(decisionTimeline, informationSource),
             onboardingStrategy: getOnboardingStrategy(maturityLevel, lifecycle, context)
+        }, answers);
+
+        return {
+            positioning: getPositioning(decisionFactor, context),
+            priorityFeatures: getPriorityFeatures(functional, context),
+            emotionalStrategy: getEmotionalStrategy(emotional, context),
+            retentionFocus: getRetentionFocus(results.switchingTriggers, decisionFactor),
+            targetSegment: getTargetSegment(userType, context),
+            successMetrics: getSuccessMetrics(successMetric, context),
+            lifecycleInsights: getLifecycleInsights(lifecycle),
+            complianceNotes: getComplianceNotes(compliance),
+            currentSolutionInsights: getCurrentSolutionInsights(currentSolution, context),
+            searchTriggerStrategy: getSearchTriggerStrategy(searchTrigger, get('trigger_situation')),
+            successCriteriaStrategy: getSuccessCriteriaStrategy(successCriteria, successMetric),
+            adoptionStrategy: getAdoptionStrategy(adoptionBarrier, budgetConstraint),
+            usageStrategy: getUsageStrategy(usageFrequency, lifecycle),
+            integrationStrategy: getIntegrationStrategy(integrationImportance, functional),
+            salesStrategy: getSalesStrategy(decisionTimeline, informationSource),
+            onboardingStrategy: getOnboardingStrategy(maturityLevel, lifecycle, context),
+            contradictions: contradictions,
+            benchmark: benchmark,
+            metrics: metrics,
+            prioritized: prioritized
         };
+    }
+
+    // Проверка противоречий в ответах
+    function checkContradictions(answers) {
+        const contradictions = [];
+        const get = (q) => {
+            const val = answers[q];
+            if (!val) return '';
+            return Array.isArray(val) ? val[0] : val;
+        };
+
+        // Противоречие: индивидуальный пользователь + командная работа
+        if (get('user_type') === 'individual' && get('collaboration') === 'team') {
+            contradictions.push({
+                type: 'warning',
+                message: 'Выбраны индивидуальные пользователи, но важна командная работа. Уточните основной сценарий использования.'
+            });
+        }
+
+        // Противоречие: низкая цена + премиум позиционирование
+        if (get('decision_factor') === 'price' && get('budget_constraint') === 'convenience_price') {
+            contradictions.push({
+                type: 'warning',
+                message: 'Выбрана низкая цена как преимущество, но пользователи готовы платить за удобство. Уточните ценовую стратегию.'
+            });
+        }
+
+        // Противоречие: новички + минимальный onboarding
+        if (get('maturity_level') === 'beginner' && get('lifecycle_stage') === 'scaling') {
+            contradictions.push({
+                type: 'info',
+                message: 'Новички обычно не сразу масштабируются. Уточните, на каком этапе пользователи начинают использовать продукт.'
+            });
+        }
+
+        // Противоречие: услуга + API интеграции
+        if (get('context') === 'service' && get('integration_importance') === 'critical') {
+            contradictions.push({
+                type: 'info',
+                message: 'Для услуг API интеграции обычно не критичны. Уточните, нужны ли технические интеграции для вашей услуги.'
+            });
+        }
+
+        return contradictions;
+    }
+
+    // Эталонные JTBD для сравнения
+    function getBenchmarkJTBD(context, userType) {
+        const benchmarks = {
+            'saas-individual': {
+                jtbd: 'Когда я работаю над задачей, хочу быстро получить результат, чтобы сэкономить время и быть продуктивным.',
+                examples: ['Notion', 'Todoist', 'Grammarly']
+            },
+            'saas-business': {
+                jtbd: 'Когда команда растет, мы хотим автоматизировать процессы, чтобы масштабироваться без увеличения команды.',
+                examples: ['Slack', 'Asana', 'HubSpot']
+            },
+            'service-individual': {
+                jtbd: 'Когда мне нужна помощь, я хочу быстро найти эксперта, чтобы решить проблему качественно.',
+                examples: ['Uber', 'Airbnb', 'Calendly']
+            },
+            'marketplace-individual': {
+                jtbd: 'Когда мне нужно что-то купить, я хочу найти лучший вариант, чтобы получить качество и выгодную цену.',
+                examples: ['Amazon', 'eBay', 'Etsy']
+            },
+            'physical-individual': {
+                jtbd: 'Когда мне нужен продукт, я хочу получить его быстро и качественно, чтобы решить задачу эффективно.',
+                examples: ['Apple', 'Tesla', 'Dyson']
+            }
+        };
+
+        const key = `${context}-${userType === 'hybrid' ? 'business' : userType}`;
+        return benchmarks[key] || benchmarks['saas-individual'];
+    }
+
+    // Расчет бизнес-метрик
+    function calculateBusinessMetrics(answers, results) {
+        const get = (q) => {
+            const val = answers[q];
+            if (!val) return '';
+            return Array.isArray(val) ? val[0] : val;
+        };
+
+        const context = get('context');
+        const userType = get('user_type');
+        const successMetric = get('success_metric');
+        const decisionTimeline = get('decision_timeline');
+        const adoptionBarrier = get('adoption_barrier');
+
+        // Базовые метрики в зависимости от типа продукта
+        let baseRetention = 0.7; // 70% базовый retention
+        let baseConversion = 0.05; // 5% базовая конверсия
+        let baseLTV = 1000; // $1000 базовый LTV
+
+        // Корректировки по контексту
+        if (context === 'saas') {
+            baseRetention = 0.85;
+            baseConversion = 0.03;
+            baseLTV = 5000;
+        } else if (context === 'service') {
+            baseRetention = 0.60;
+            baseConversion = 0.10;
+            baseLTV = 500;
+        } else if (context === 'marketplace') {
+            baseRetention = 0.75;
+            baseConversion = 0.08;
+            baseLTV = 2000;
+        }
+
+        // Корректировки по барьерам внедрения
+        if (adoptionBarrier === 'cost') {
+            baseConversion *= 0.7;
+        } else if (adoptionBarrier === 'complexity') {
+            baseConversion *= 0.6;
+            baseRetention *= 0.9;
+        }
+
+        // Корректировки по циклу принятия решения
+        if (decisionTimeline === 'instant') {
+            baseConversion *= 1.5;
+        } else if (decisionTimeline === 'months') {
+            baseConversion *= 0.5;
+        }
+
+        // Расчет ROI
+        const cac = baseLTV * 0.3; // Customer Acquisition Cost = 30% от LTV
+        const roi = ((baseLTV - cac) / cac) * 100;
+
+        return {
+            retention: Math.round(baseRetention * 100),
+            conversion: Math.round(baseConversion * 100),
+            ltv: Math.round(baseLTV),
+            cac: Math.round(cac),
+            roi: Math.round(roi),
+            churn: Math.round((1 - baseRetention) * 100)
+        };
+    }
+
+    // Приоритизация рекомендаций
+    function prioritizeRecommendations(insights, answers) {
+        const get = (q) => {
+            const val = answers[q];
+            if (!val) return '';
+            return Array.isArray(val) ? val[0] : val;
+        };
+
+        const prioritized = [];
+        const context = get('context');
+        const functional = get('functional_focus');
+        const emotional = get('emotional_driver');
+        const decisionFactor = get('decision_factor');
+
+        // Высокий приоритет
+        prioritized.push({
+            priority: 'high',
+            title: 'Стратегия позиционирования',
+            content: insights.positioning,
+            impact: 'Критично для привлечения правильной аудитории',
+            effort: 'medium'
+        });
+
+        prioritized.push({
+            priority: 'high',
+            title: 'Приоритетные функции',
+            content: insights.priorityFeatures,
+            impact: 'Определяет развитие продукта',
+            effort: 'high'
+        });
+
+        // Средний приоритет
+        prioritized.push({
+            priority: 'medium',
+            title: 'Стратегия онбординга',
+            content: insights.onboardingStrategy,
+            impact: 'Влияет на конверсию и retention',
+            effort: 'medium'
+        });
+
+        prioritized.push({
+            priority: 'medium',
+            title: 'Стратегия преодоления барьеров',
+            content: insights.adoptionStrategy,
+            impact: 'Улучшает конверсию',
+            effort: 'low'
+        });
+
+        // Низкий приоритет
+        prioritized.push({
+            priority: 'low',
+            title: 'Эмоциональная стратегия',
+            content: insights.emotionalStrategy,
+            impact: 'Улучшает восприятие бренда',
+            effort: 'low'
+        });
+
+        return prioritized;
+    }
+
+    // Сохранение анализа
+    function saveAnalysis(answers, results, insights, projectName) {
+        const analyses = JSON.parse(localStorage.getItem('jtbd_analyses') || '[]');
+        const analysis = {
+            id: Date.now(),
+            projectName: projectName || 'Без названия',
+            date: new Date().toISOString(),
+            answers: answers,
+            results: results,
+            insights: insights
+        };
+        analyses.push(analysis);
+        localStorage.setItem('jtbd_analyses', JSON.stringify(analyses));
+        return analysis.id;
+    }
+
+    // Получение сохраненных анализов
+    function getSavedAnalyses() {
+        return JSON.parse(localStorage.getItem('jtbd_analyses') || '[]');
+    }
+
+    // Экспорт в PDF (через print)
+    function exportToPDF(results, insights, projectName) {
+        const printWindow = window.open('', '_blank');
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>JTBD Analysis - ${projectName}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 40px; }
+                    h1 { color: #000; }
+                    .section { margin-bottom: 30px; }
+                    .section-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+                </style>
+            </head>
+            <body>
+                <h1>JTBD Analysis: ${projectName}</h1>
+                <div class="section">
+                    <div class="section-title">Основная Job To Be Done</div>
+                    <p>${results.primaryJTBD}</p>
+                </div>
+                <!-- Добавьте остальные разделы -->
+            </body>
+            </html>
+        `;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    // Экспорт в Excel (CSV формат)
+    function exportToExcel(results, insights, projectName) {
+        const csv = [
+            ['JTBD Analysis', projectName],
+            ['Дата', new Date().toLocaleDateString()],
+            [''],
+            ['Основная JTBD', results.primaryJTBD],
+            [''],
+            ['Приоритетные функции'],
+            ...insights.priorityFeatures.map(f => ['', f])
+        ].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `jtbd-analysis-${projectName}-${Date.now()}.csv`;
+        link.click();
     }
 
     function getPositioning(factor, context) {
@@ -1428,6 +1870,34 @@
                     </div>
                 </div>
 
+                ${insights.contradictions && insights.contradictions.length > 0 ? `
+                <div class="result-section">
+                    <div class="result-section-title">⚠️ Проверка противоречий</div>
+                    <div class="result-content">
+                        ${insights.contradictions.map(c => `
+                            <div class="warning-box">
+                                <strong>${c.type === 'warning' ? '⚠️ Внимание' : 'ℹ️ Информация'}</strong>
+                                ${c.message}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="result-section">
+                    <div class="result-section-title">📊 Сравнение с эталонными JTBD</div>
+                    <div class="result-content">
+                        <div style="margin-bottom:12px;">
+                            <strong>Эталонная JTBD для вашего типа продукта:</strong>
+                            <div style="font-style:italic;margin-top:8px;">"${insights.benchmark.jtbd}"</div>
+                        </div>
+                        <div>
+                            <strong>Примеры продуктов с похожей JTBD:</strong>
+                            <div style="margin-top:8px;">${insights.benchmark.examples.join(', ')}</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="result-section">
                     <div class="result-section-title">🎯 Стратегия позиционирования</div>
                     <div class="result-content">
@@ -1496,6 +1966,61 @@
                     <div class="result-section-title">📈 Ключевые метрики успеха</div>
                     <div class="result-content">
                         ${insights.successMetrics}
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <div class="result-section-title">💰 Прогноз бизнес-метрик</div>
+                    <div class="result-content">
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">${insights.metrics.retention}%</div>
+                                <div class="metric-label">Retention Rate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${insights.metrics.conversion}%</div>
+                                <div class="metric-label">Conversion Rate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">$${insights.metrics.ltv}</div>
+                                <div class="metric-label">LTV (Lifetime Value)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">$${insights.metrics.cac}</div>
+                                <div class="metric-label">CAC (Acquisition Cost)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${insights.metrics.roi}%</div>
+                                <div class="metric-label">ROI</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${insights.metrics.churn}%</div>
+                                <div class="metric-label">Churn Rate</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px;font-size:14px;color:#666;">
+                            <strong>Примечание:</strong> Это прогнозные метрики на основе ваших ответов. Для точных данных проведите A/B тесты и валидацию с реальными пользователями.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <div class="result-section-title">🎯 Приоритизированные рекомендации</div>
+                    <div class="result-content">
+                        ${insights.prioritized.map((rec, idx) => `
+                            <div style="margin-bottom:20px;padding:16px;background-color:#f9f9f9;border-radius:8px;border-left:4px solid ${rec.priority === 'high' ? '#dc3545' : rec.priority === 'medium' ? '#ffc107' : '#28a745'};">
+                                <div style="display:flex;align-items:center;margin-bottom:8px;">
+                                    <strong>${idx + 1}. ${rec.title}</strong>
+                                    <span class="priority-badge priority-${rec.priority}">${rec.priority === 'high' ? 'Высокий' : rec.priority === 'medium' ? 'Средний' : 'Низкий'}</span>
+                                </div>
+                                <div style="margin-bottom:8px;">
+                                    ${typeof rec.content === 'string' ? rec.content : rec.content.map(f => `<div class="result-item">• ${f}</div>`).join('')}
+                                </div>
+                                <div style="font-size:12px;color:#666;">
+                                    <strong>Влияние:</strong> ${rec.impact} | <strong>Усилия:</strong> ${rec.effort === 'high' ? 'Высокие' : rec.effort === 'medium' ? 'Средние' : 'Низкие'}
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
 
@@ -1572,6 +2097,8 @@
 
                 <div class="button-group">
                     <button class="btn btn-copy" id="copyBtn">Скопировать результаты</button>
+                    <button class="btn btn-secondary" id="exportPDFBtn">Экспорт в PDF</button>
+                    <button class="btn btn-secondary" id="exportExcelBtn">Экспорт в Excel</button>
                     <button class="btn btn-secondary" id="resetBtn">Начать заново</button>
                 </div>
             </div>
@@ -1814,6 +2341,9 @@ ${insights.onboardingStrategy}
         const insights = generateProductInsights(state.answers, results);
         const projectName = state.answers.project_name || '';
 
+        // Сохраняем анализ
+        saveAnalysis(state.answers, results, insights, projectName);
+
         let html = renderHeader(progress);
         html += `<div class="container">`;
         html += renderResultsView(results, insights, projectName);
@@ -1823,6 +2353,16 @@ ${insights.onboardingStrategy}
 
         document.getElementById('copyBtn').addEventListener('click', handleCopyResults);
         document.getElementById('resetBtn').addEventListener('click', handleReset);
+        
+        // Обработчики экспорта
+        const exportPDFBtn = document.getElementById('exportPDFBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        if (exportPDFBtn) {
+            exportPDFBtn.addEventListener('click', () => exportToPDF(results, insights, projectName));
+        }
+        if (exportExcelBtn) {
+            exportExcelBtn.addEventListener('click', () => exportToExcel(results, insights, projectName));
+        }
     }
 
     function initApp() {
